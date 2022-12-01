@@ -1,0 +1,86 @@
+<script
+  async
+  src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"
+></script>
+
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.147.0/build/three.module.js"
+    }
+  }
+</script>
+
+<script type="module">
+  import * as THREE from "three";
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(
+    75,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
+  );
+
+  const renderer = new THREE.WebGLRenderer();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+  const light = new THREE.HemisphereLight(0xffffbb, 0x080820, 1);
+  scene.add(light);
+
+  const geometry = new THREE.BoxGeometry(1, 1, 1);
+  const materialGreen = new THREE.MeshLambertMaterial({ color: 0x00ff00 });
+  const cubeGreen = new THREE.Mesh(geometry, materialGreen);
+  cubeGreen.position.copy(new THREE.Vector3(-5, 0, 0));
+  scene.add(cubeGreen);
+
+  const materialRed = new THREE.MeshLambertMaterial({ color: 0xff0000 });
+  const cubeRed = new THREE.Mesh(geometry, materialRed);
+  cubeRed.position.copy(new THREE.Vector3(-7, 1, 0));
+  scene.add(cubeRed);
+
+  const materialBlue = new THREE.MeshLambertMaterial({ color: 0x0000ff });
+  const cubeBlue = new THREE.Mesh(geometry, materialBlue);
+  cubeGreen.add(cubeBlue);
+  // cubeBlue.position.copy(cubeRed.position)
+  // cubeBlue.position.copy(new THREE.Vector3(0,0,0))
+
+  const cubeRedInGreenRef = new THREE.Vector3(
+    cubeRed.position.x - cubeGreen.position.x,
+    cubeRed.position.y - cubeGreen.position.y,
+    cubeRed.position.z - cubeGreen.position.z
+  );
+
+  const middleRedGreen = new THREE.Vector3(
+    cubeRedInGreenRef.x / 2,
+    cubeRedInGreenRef.y / 2,
+    cubeRedInGreenRef.z / 2
+  );
+
+  cubeBlue.position.copy(middleRedGreen);
+
+  camera.position.z = 5;
+
+  function animate() {
+    requestAnimationFrame(animate);
+
+    cubeGreen.position.x += 0.01;
+    cubeRed.position.x += 0.02;
+    const cubeRedInGreenRef = new THREE.Vector3(
+      cubeRed.position.x - cubeGreen.position.x,
+      cubeRed.position.y - cubeGreen.position.y,
+      cubeRed.position.z - cubeGreen.position.z
+    );
+
+    const middleRedGreen = new THREE.Vector3(
+      cubeRedInGreenRef.x / 2,
+      cubeRedInGreenRef.y / 2,
+      cubeRedInGreenRef.z / 2
+    );
+    cubeBlue.position.copy(middleRedGreen);
+
+    renderer.render(scene, camera);
+  }
+
+  animate();
+</script>
